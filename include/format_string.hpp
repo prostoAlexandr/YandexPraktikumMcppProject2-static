@@ -4,6 +4,8 @@
 #include <expected>
 
 #include "types.hpp"
+#include <array>
+#include <string>
 
 namespace stdx::details {
 
@@ -11,8 +13,10 @@ namespace stdx::details {
 // ваш код здесь
 template <fixed_string str>
 class format_string {
-    static fixed_string _str{str};
+public:
+    constexpr static fixed_string fmt{str};
 
+private:
     // Функция для получения количества плейсхолдеров и проверки корректности формирующей строки
     static consteval std::expected<size_t, parse_error> get_number_placeholders() {
         constexpr size_t N = str.size();
@@ -73,19 +77,24 @@ class format_string {
         return placeholder_count;
     }
 
-    static constexpr std::expected<size_t, parse_error> number_placeholders = get_number_placeholders();
-    static_assert(number_placeholders.has_value(), "Invalid format string");
+    static constexpr auto number_placeholders_result = get_number_placeholders();
+    static_assert(number_placeholders_result.has_value(), "Invalid format string");
 
-    using placeholder_positions_t = std::array<std::pair<std::size_t, std::size_t>, number_placeholders.value()>;
+public:
+    static constexpr size_t number_placeholders = number_placeholders_result.value();
+
+    using placeholder_positions_t = std::array<std::pair<std::size_t, std::size_t>, number_placeholders>;
+
+private:
     // Функция для получения позиций плейсхолдеров
-    static placeholder_positions_t get_placeholder_positions() {
+    static consteval placeholder_positions_t get_placeholder_positions() {
         constexpr size_t N = str.size();
-        if (!N)
-            return 0;
+        placeholder_positions_t result;
+        if constexpr (!N)
+            static_assert(false, "No placeholders found");
 
         size_t placeholder_start = 0;
         size_t placeholder_finish = 0;
-        placeholder_positions_t result;
         size_t result_index = 0;
         size_t pos = 0;
         const size_t size = N - 1;  // -1 для игнорирования нуль-терминатора
@@ -110,16 +119,15 @@ class format_string {
         }
         return result;
     }
-    static placeholder_positions_t placeholder_positions = get_placeholder_positions();
+
+public:
+    static constexpr placeholder_positions_t placeholder_positions = get_placeholder_positions();
 };
 
-// Пользовательский литерал
-/*
-ваш код здесь
-ваш код здесь operator"" _fs()  сигнатуру также поменяйте
-{
-ваш код здесь
-}
-*/
-
 }  // namespace stdx::details
+
+// Пользовательский литерал
+template <stdx::details::fixed_string Str>
+consteval auto operator""_fs() {
+    return stdx::details::format_string<Str>{};
+}
