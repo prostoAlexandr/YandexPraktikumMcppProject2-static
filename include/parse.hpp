@@ -67,18 +67,14 @@ consteval auto get_current_source_for_parsing() {
 
 // Реализуйте семейство функций parse_value
 template <fixed_string source, std::integral TargetT>
-// consteval TargetT parse_value() {
-//     constexpr TargetT parsed = 0;
-//     constexpr auto result = std::from_chars(source.data, source.data + source.size(), parsed);
-//     static_assert(!(bool)result, "Error parsing value");
-//     return parsed;
-// };
-
 consteval TargetT parse_value() {
-    constexpr auto result = stn::StrToNum<TargetT>(std::string_view(source.data, source.size()));
-    static_assert(result, "Error parsing value");
-    return result.value();
-}
+    TargetT parsed = 0;
+    auto result = std::from_chars(source.data, source.data + source.size(), parsed);
+    if (!(bool)result) {
+        throw parse_error{"Error parsing value"};
+    }
+    return parsed;
+};
 
 template <typename T>
 concept StringvType = std::is_same_v<T, std::string_view>;

@@ -19,12 +19,14 @@ int main() {
 
     // Test several types
     {
-        constexpr auto result = stdx::scan<"test{} {};{}"_fs, "test10 view_string_value;-6", uint8_t, std::string_view, int64_t>();
+        constexpr auto result =
+            stdx::scan<"test{} {};{}"_fs, "test10 view_string_value;-6", uint8_t, std::string_view, int64_t>();
         constexpr auto test = std::make_tuple<uint8_t, std::string_view, int64_t>(10, "view_string_value", -6);
         static_assert(result.values() == test && std::is_same_v<decltype(result.tuple), decltype(test)>, "Test failed");
     }
     {
-        constexpr auto result = stdx::scan<"test{%d} {%u};{%s}"_fs, "test993 42;view_string_value", int16_t, uint8_t, std::string_view>();
+        constexpr auto result =
+            stdx::scan<"test{%d} {%u};{%s}"_fs, "test993 42;view_string_value", int16_t, uint8_t, std::string_view>();
         constexpr auto test = std::make_tuple<int16_t, uint8_t, std::string_view>(993, 42, "view_string_value");
         static_assert(result.values() == test && std::is_same_v<decltype(result.tuple), decltype(test)>, "Test failed");
     }
