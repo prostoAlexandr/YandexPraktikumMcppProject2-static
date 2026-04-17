@@ -31,7 +31,7 @@ struct fixed_string {
 
 // deduction guide для string literal
 template <typename CharT, std::size_t N>
-fixed_string(const CharT (&)[N]) -> fixed_string<char, N>;
+fixed_string(const CharT (&)[N]) -> fixed_string<CharT, N>;
 
 // Шаблонный класс, хранящий fixed_string достаточной длины для хранения ошибки парсинга
 struct parse_error : public fixed_string<char, 128> {};

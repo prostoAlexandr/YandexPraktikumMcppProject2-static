@@ -9,7 +9,6 @@
 #include <system_error>
 #include <type_traits>
 
-#include "StrToNum.h"
 #include "format_string.hpp"
 #include "types.hpp"
 
