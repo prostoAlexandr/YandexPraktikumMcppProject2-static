@@ -39,7 +39,7 @@ struct parse_error : public fixed_string<char, 128> {};
 // Шаблонный класс для хранения результатов парсинга
 template <typename... Ts>
 struct scan_result {
-    constexpr scan_result(std::tuple<Ts...> &&t) : tuple(t) {}
+    constexpr scan_result(std::tuple<Ts...> &&t) : tuple(std::move(t)) {}
     const std::tuple<Ts...> tuple;
     constexpr auto &values() const { return tuple; }
 };

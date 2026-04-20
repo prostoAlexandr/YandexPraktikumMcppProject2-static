@@ -97,6 +97,7 @@ consteval TargetT parse_input() {
         return fmt_end - 1 != fmt_start ? fmt.fmt.data[fmt_end - 1] : SupportedTypes::NOT_SET;
     }();
 
+    // TODO: сделать концепты на основе условия
     using no_cvr_target = std::remove_cvref_t<TargetT>;
     if constexpr (!((format_specifier == SupportedTypes::SIGNED &&
                      (std::is_same_v<no_cvr_target, int8_t> || std::is_same_v<no_cvr_target, int16_t> ||
